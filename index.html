@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>A Question for You</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #ffe6eb, #fff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .page {
+      display: none;
+      background: white;
+      padding: 40px 30px;
+      border-radius: 18px;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      animation: fadeIn 0.5s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 12px 22px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background-color: #ff5c8a;
+      color: white;
+    }
+
+    .buttons {
+      position: relative;
+      height: 60px;
+    }
+
+    .yes {
+      left: 50%;
+      transform: translateX(-120%);
+      position: absolute;
+    }
+
+    .no {
+      left: 50%;
+      transform: translateX(20%);
+      position: absolute;
+      background-color: #eee;
+      color: #333;
+    }
+
+    .final {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #ffdde6, #fff);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 3;
+      padding: 40px;
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+  <h1 id="introTitle"></h1>
+  <p>I’ve been wanting to tell you something…</p>
+  <button onclick="nextPage(2)">Next →</button>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+  <h1>✨ A Little Moment ✨</h1>
+  <p id="daysText"></p>
+  <button onclick="nextPage(3)">Next →</button>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="page3">
+  <h1>💖 Just One Thing 💖</h1>
+  <p>
+    Time always flies when we’re together, 
+    and I always cherish every single moment with you.
+    I hope you enjoyed the moments with me as much as I did —
+    the laughs, the conversations, and just being around you.
+  </p>
+  <p>
+    There’s one last thing I’ve been wanting to ask you.
+  </p>
+
+  <button onclick="nextPage(4)">Next →</button>
+</div>
+
+<!-- PAGE 4 -->
+<div class="page" id="page4">
+  <h1>💌 One Last Question 💌</h1>
+
+  <h2>Would you like to be my girlfriend?</h2>
+
+  <div class="buttons">
+    <button class="yes" onclick="sayYes()">Yes 💕</button>
+    <button class="no" id="noBtn" onclick="sayNo()">No 🙈</button>
+  </div>
+</div>
+
+<!-- FINAL -->
+<div class="final" id="finalScreen">
+  <div>
+    <h1>🎉 She said YES! 🎉</h1>
+    <p id="finalText"></p>
+    <p id="jokeText"></p>
+  </div>
+</div>
+
+<script>
+  /* =====================
+     CUSTOMISE HERE
+  ====================== */
+  const herName = "Vanessa";
+  const daysSince = 99;
+  /* ===================== */
+
+  document.getElementById("introTitle").innerText = `Hi ${herName} 😊`;
+  document.getElementById("daysText").innerHTML =
+    `Today is a little special — it’s been <strong>${daysSince} days</strong> since the day we first met.`;
+
+  function nextPage(n) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(`page${n}`).classList.add("active");
+  }
+
+  // No button runs away
+  const noBtn = document.getElementById("noBtn");
+  noBtn.addEventListener("mouseenter", () => {
+    const x = Math.random() * 120 - 60;
+    const y = Math.random() * 60 - 30;
+    noBtn.style.transform = `translate(${x}px, ${y}px)`;
+  });
+
+  function sayYes() {
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+    document.getElementById("finalScreen").style.display = "flex";
+
+    document.getElementById("finalText").innerHTML =
+      `I’m really happy. 💖`;
+
+    document.getElementById("jokeText").innerHTML =
+      "Congratulations 🎊 You are now officially my passenger princess 👑<br>" +
+      "Your responsibilities include sitting pretty while I drive,<br>" +
+      "and my responsibilities include feeding you lots of good food 🍔🍣🍰";
+
+    startConfetti();
+  }
+
+  function sayNo() {
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+    document.getElementById("finalScreen").style.display = "flex";
+
+    document.getElementById("finalText").innerHTML =
+      "Thank you for being honest 💛";
+
+    document.getElementById("jokeText").innerHTML =
+      "I really appreciate it, and I’m glad I got to tell you about my feelings.";
+  }
+
+  function startConfetti() {
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = Array.from({ length: 150 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 4,
+      c: `hsl(${Math.random() * 360}, 100%, 70%)`,
+      s: Math.random() * 3 + 2
+    }));
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(p => {
+        p.y += p.s;
+        if (p.y > canvas.height) p.y = -10;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.c;
+        ctx.fill();
+      });
+      requestAnimationFrame(update);
+    }
+    update();
+  }
+</script>
+
+</body>
+</html>
